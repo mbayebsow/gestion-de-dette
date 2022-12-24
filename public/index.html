@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="initial-scale=1, width=device-width" />
+        <link rel="stylesheet" href="src/index.css" />
+        <script src="vendor/tailwind.js"></script>
+        <script src="tailwind.config.js"></script>
+        <script src="vendor/alpine.js" defer></script>
+        <script src="vendor/moment.min.js"></script>
+        <script src="vendor/moment-with-locales.js"></script>
+        <script src="vendor/piklor.js"></script>
+        <script src="vendor/winbox.bundle.min.js"></script>
+        <script src="index.js"></script>
+    </head>
+    <body x-cloak x-data="initApp()" x-init="loadDatas()" class="w-screen h-screen overflow-hidden bg-[url(./src/img/background.png)] bg-cover bg-no-repeat bg-[top] text-left text-xs text-black font-inter">
+        <div x-show="!timetry" class="w-1/2 fixed top-1/2 left-0 right-0 mx-auto font-bold text-2xl text-center">L'essaie de l'application est arrivé à expiration. Veillez contacter ce numero: 780108962</div>
+        <div x-show="timetry" class="w-screen h-screen flex flex-row items-start justify-center">
+            <div class="self-stretch py-[30px] relative w-32 shrink-0 overflow-hidden flex flex-col justify-center items-center">
+                <div class="h-auto gap-5 grid">
+                    <button class="cursor-pointer [border:none] p-3 bg-red-100 rounded-full w-10 h-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="white" viewBox="0 0 24 24"><path d="M0 5.783v-2.783l4 4 5-6 9 7.878 6-3.922v2.437l-6.176 3.989-8.6-7.528-5.09 6.108-4.134-4.179zm18.909 7.279l-1.267.818-1.135-.994-7.058-6.177-3.778 4.534-1.41 1.692-1.548-1.566-2.713-2.743v14.374h24v-13.226l-5.091 3.288z"/></svg>                
+                    </button>
+                    <button id="clientsHomeBtn" class="cursor-pointer [border:none] p-3 bg-white rounded-full w-10 h-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M10.118 16.064c2.293-.529 4.428-.993 3.394-2.945-3.146-5.942-.834-9.119 2.488-9.119 3.388 0 5.644 3.299 2.488 9.119-1.065 1.964 1.149 2.427 3.394 2.945 1.986.459 2.118 1.43 2.118 3.111l-.003.825h-15.994c0-2.196-.176-3.407 2.115-3.936zm-10.116 3.936h6.001c-.028-6.542 2.995-3.697 2.995-8.901 0-2.009-1.311-3.099-2.998-3.099-2.492 0-4.226 2.383-1.866 6.839.775 1.464-.825 1.812-2.545 2.209-1.49.344-1.589 1.072-1.589 2.333l.002.619z"/></svg>                
+                    </button>
+                    </button>
+                    <button id="transactionsHomeBtn" class="cursor-pointer [border:none] p-3 bg-white rounded-full w-10 h-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M16 0l-3 9h9l-1.866 2h-14.4l10.266-11zm2.267 13h-14.4l-1.867 2h9l-3 9 10.267-11z"/></svg>                
+                    </button>
+                    <button id="posSettingsHomeBtn" class="cursor-pointer [border:none] p-3 bg-white rounded-full w-10 h-10">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M6 23.73l-3-2.122v-14.2l3 1.359v14.963zm2-14.855v15.125l13-1.954v-15.046l-13 1.875zm5.963-7.875c-2.097 0-3.958 2.005-3.962 4.266l-.001 1.683c0 .305.273.54.575.494.244-.037.425-.247.425-.494v-1.681c.003-1.71 1.416-3.268 2.963-3.268.537 0 1.016.195 1.384.564.422.423.654 1.035.653 1.727v1.747c0 .305.273.54.575.494.243-.037.423-.246.423-.492l.002-1.749c.002-1.904-1.32-3.291-3.037-3.291zm-6.39 5.995c.245-.037.427-.247.427-.495v-2.232c.002-1.71 1.416-3.268 2.963-3.268l.162.015c.366-.283.765-.513 1.188-.683-.405-.207-.858-.332-1.35-.332-2.096 0-3.958 2.005-3.962 4.266v2.235c0 .306.272.538.572.494z"/></svg>                
+                    </button>
+                </div>
+            </div>
+
+            <div class="w-full h-[-webkit-fill-available] relative pr-12 overflow-hidden flex flex-col justify-between">
+                <div id="AppHeader" :class="{'pr-[110px]': process.platform != 'darwin'}" class="mb-8 border w-auto py-2 flex flex-row justify-between text-center text-lg text-black font-inter">
+                    <div class="w-[30.21%] rounded-lg bg-white shadow-lg h-10 flex flex-row items-center justify-between px-5">
+                        <input class="[border:none] flex font-inter text-lg bg-[transparent]  w-full font-bold text-gray text-left items-center h-7" type="text" placeholder="Recherche"/>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M23.822 20.88l-6.353-6.354c.93-1.465 1.467-3.2 1.467-5.059.001-5.219-4.247-9.467-9.468-9.467s-9.468 4.248-9.468 9.468c0 5.221 4.247 9.469 9.468 9.469 1.768 0 3.421-.487 4.839-1.333l6.396 6.396 3.119-3.12zm-20.294-11.412c0-3.273 2.665-5.938 5.939-5.938 3.275 0 5.94 2.664 5.94 5.938 0 3.275-2.665 5.939-5.94 5.939-3.274 0-5.939-2.664-5.939-5.939z"/></svg>
+                    </div>
+                    <div class="rounded-lg bg-white shadow-lg w-auto h-10 flex flex-row items-center justify-between px-5">
+                        <b class="mr-5" x-text="moment().format('dddd Do MMM YYYY')"></b>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M20 20h-4v-4h4v4zm-6-10h-4v4h4v-4zm6 0h-4v4h4v-4zm-12 6h-4v4h4v-4zm6 0h-4v4h4v-4zm-6-6h-4v4h4v-4zm16-8v22h-24v-22h3v1c0 1.103.897 2 2 2s2-.897 2-2v-1h10v1c0 1.103.897 2 2 2s2-.897 2-2v-1h3zm-2 6h-20v14h20v-14zm-2-7c0-.552-.447-1-1-1s-1 .448-1 1v2c0 .552.447 1 1 1s1-.448 1-1v-2zm-14 2c0 .552-.447 1-1 1s-1-.448-1-1v-2c0-.552.447-1 1-1s1 .448 1 1v2z"/></svg>
+                    </div>
+                    <div class="h-10 flex flex-row gap-3">
+                        <button class="cursor-pointer [border:none] w-10 h-10 p-[0] bg-white rounded-lg shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M19 7.001c0 3.865-3.134 7-7 7s-7-3.135-7-7c0-3.867 3.134-7.001 7-7.001s7 3.134 7 7.001zm-1.598 7.18c-1.506 1.137-3.374 1.82-5.402 1.82-2.03 0-3.899-.685-5.407-1.822-4.072 1.793-6.593 7.376-6.593 9.821h24c0-2.423-2.6-8.006-6.598-9.819z"/></svg>
+                        </button>
+                        <button class="cursor-pointer [border:none] w-10 h-10 p-[0] bg-red-100 rounded-lg shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="white" viewBox="0 0 24 24"><path d="M16 9v-4l8 7-8 7v-4h-8v-6h8zm-2 10v-.083c-1.178.685-2.542 1.083-4 1.083-4.411 0-8-3.589-8-8s3.589-8 8-8c1.458 0 2.822.398 4 1.083v-2.245c-1.226-.536-2.577-.838-4-.838-5.522 0-10 4.477-10 10s4.478 10 10 10c1.423 0 2.774-.302 4-.838v-2.162z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-2 w-full flex flex-row justify-between items-center h-[70px]">
+                    <div class="">
+                        <p class="m-[0] text-2xl font-black font-inherit flex items-center" x-text="'SOLDE TOTAL: '+priceFormat(soldeTotal)"></p>
+                        <p class="m-[0] text-base" x-text="getCompteData('AllNames')"></p>
+                    </div>
+                    <div class="flex flex-row gap-2">
+                        <button x-show="comptes.length" x-on:click="modalAddTransaction = true" class="cursor-pointer [border:none] p-[0] rounded-lg bg-green w-auto h-9 flex flex-row items-center justify-between px-5">
+                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="white" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z"/></svg>
+                            <b class="text-lg font-inter text-white text-left">Ajouter une transaction</b>
+                        </button>
+                        <button x-on:click="modalAddCompte = true" class="cursor-pointer [border:none] p-[0] rounded-lg bg-orange-100 w-auto h-9 flex flex-row items-center justify-between px-5">
+                            <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="white" viewBox="0 0 24 24"><path d="M24 10h-10v-10h-4v10h-10v4h10v10h4v-10h10z"/></svg>
+                            <b class="text-lg font-inter text-white text-center">Ajouter un compte</b>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="mb-2 flex overflow-x-auto items-center gap-3 w-full h-[210px] rounded-lg text-base text-white overflow-hidden rounded-xl">
+                    <template x-for="compte in comptes" :key="compte._id">
+                        <div :style="`background: linear-gradient(130deg, rgba(0,0,0,1) 60%, ${compte.Couleur} 120%);`" class="relative flex-shrink-0 p-3 rounded-xl bg-black w-60 flex flex-col justify-between gap-2 overflow-hidden">
+                            <div class="h-auto">
+                                <div class="text-xl font-black" x-text="priceFormat(compte.Solde)"></div>
+                                <div class="" x-text="moment(compte.DernierMaj).format('dddd Do MMM YYYY')"></div>
+                            </div>
+                            <div class="w-full text-xl flex flex-row justify-between items-center">
+                                <div :style="`color: ${compte.Couleur};`" class="font-medium" x-text="compte.Nom"></div>
+                                <div :style="`background: ${compte.Couleur};`" role="button" x-on:click="deleteCompte(compte)" class="w-7 h-7 rounded-full justify-center items-center flex"><svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 24 24"><path d="M24 20.188l-8.315-8.209 8.2-8.282-3.697-3.697-8.212 8.318-8.31-8.203-3.666 3.666 8.321 8.24-8.206 8.313 3.666 3.666 8.237-8.318 8.285 8.203z"/></svg></div>
+                            </div>
+                        </div>
+                    </template>
+                </div>
+
+                <div class="w-full h-full text-xl flex flex-row justify-between gap-3 overflow-hidden">
+                    <div class="h-full w-2/4 rounded-lg bg-white flex flex-col gap-2 overflow-hidden"">
+                        <div class="font-semibold border-b-black h-[20px] p-3 pt-5 flex flex-grow items-center gap-3"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"><path d="M12 3l12 18h-24z"/></svg>
+                            Somme dues
+                        </div>
+                        <div class="w-auto h-full overflow-y-auto px-3">
+                            <template x-for="Due in dues" :key="Due._id">
+                                <div class="w-auto shadow rounded-md mb-2 p-2">
+                                    <div class="flex flex-row justify-between items-center gap-2">
+                                        <div class="text-left w-full">
+                                            <div class="" x-text="Due.Motif"></div>
+                                            <div class="font-bold" x-text="priceFormat(Due.Montant)"></div>
+                                        </div>
+                                        <div class="flex flex-row gap-4 items-center">
+                                            <div class="">
+                                                <svg x-show="Due.DueType == 'sortant'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24"><path d="M12 3l12 18h-24z"/></svg>
+                                                <svg x-show="Due.DueType == 'entrant'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="SpringGreen" viewBox="0 0 24 24"><path d="M12 21l-12-18h24z"/></svg>
+                                            </div>
+                                            <div class="w-auto">
+                                                <svg x-show="Due.Rappel == false" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M4.257 6.67l-.737-.737 1.415-1.414 15.693 15.693-1.414 1.414-.812-.811c-1.577 1.316-3.695 2.185-6.403 2.185-6.914 0-10.001-5.684-10.001-10 0-2.402.847-4.606 2.259-6.33zm1.425 1.425c-1.055 1.355-1.684 3.058-1.684 4.905 0 4.41 3.59 8 8.001 8 1.847 0 3.549-.629 4.905-1.683l-11.222-11.222zm1.233-3.709c1.489-.881 3.228-1.387 5.084-1.387 5.527 0 10.002 4.479 10.002 10.001 0 1.632-.441 3.463-1.366 5.107l-1.497-1.497c.552-1.085.863-2.312.863-3.61 0-4.413-3.59-8.001-8.002-8.001-1.298 0-2.525.311-3.61.862l-1.474-1.475zm-6.113 4.329c-.535-.824-.802-1.772-.802-2.718 0-2.757 2.233-4.995 4.991-4.995.948 0 1.896.268 2.721.803-3.172 1.217-5.692 3.739-6.91 6.91zm18.201-7.715c-.947 0-1.895.268-2.719.803 3.17 1.218 5.694 3.739 6.914 6.909.534-.823.801-1.77.801-2.717 0-2.761-2.236-4.995-4.996-4.995z"/></svg>
+                                                <svg x-show="Due.Rappel == true"width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M19.004 1c-.947 0-1.895.268-2.719.803 3.17 1.218 5.694 3.739 6.914 6.909.534-.823.801-1.77.801-2.717 0-2.761-2.236-4.995-4.996-4.995m-7.004 20c-4.411 0-8.001-3.59-8.001-8 0-4.413 3.59-8.001 8.001-8.001 4.412 0 8.002 3.588 8.002 8.001 0 4.41-3.59 8-8.002 8m10.002-8c0-5.522-4.475-10.001-10.002-10.001-5.523 0-10.001 4.479-10.001 10.001 0 4.316 3.087 10 10.001 10 6.93 0 10.002-5.693 10.002-10m-21.199-4.285c-.535-.824-.802-1.772-.802-2.718 0-2.757 2.233-4.995 4.991-4.995.948 0 1.896.268 2.721.803-3.172 1.217-5.692 3.739-6.91 6.91m12.196 4.285v-5h-1.999v6.998h5.999v-1.998h-4z"/></svg>
+                                            </div>
+                                            <div class="w-auto">
+                                                <svg x-show="Due.Montant != CheckPaiement(Due._id)" width="27" height="27" fill="orange" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 1.5c-4.69 0-8.497 3.807-8.497 8.497s3.807 8.498 8.497 8.498 8.498-3.808 8.498-8.498-3.808-8.497-8.498-8.497zm0 7.425 2.717-2.718c.146-.146.339-.219.531-.219.404 0 .75.325.75.75 0 .193-.073.384-.219.531l-2.717 2.717 2.727 2.728c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.384-.073-.53-.219l-2.729-2.728-2.728 2.728c-.146.146-.338.219-.53.219-.401 0-.751-.323-.751-.75 0-.192.073-.384.22-.531l2.728-2.728-2.722-2.722c-.146-.147-.219-.338-.219-.531 0-.425.346-.749.75-.749.192 0 .385.073.531.219z" fill-rule="nonzero"/></svg>
+                                                <svg x-show="Due.Montant == CheckPaiement(Due._id)" width="24" height="24" fill="SpringGreen" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.998 2.005c5.517 0 9.997 4.48 9.997 9.997 0 5.518-4.48 9.998-9.997 9.998-5.518 0-9.998-4.48-9.998-9.998 0-5.517 4.48-9.997 9.998-9.997zm0 1.5c-4.69 0-8.498 3.807-8.498 8.497s3.808 8.498 8.498 8.498 8.497-3.808 8.497-8.498-3.807-8.497-8.497-8.497zm-5.049 8.886 3.851 3.43c.142.128.321.19.499.19.202 0 .405-.081.552-.242l5.953-6.509c.131-.143.196-.323.196-.502 0-.41-.331-.747-.748-.747-.204 0-.405.082-.554.243l-5.453 5.962-3.298-2.938c-.144-.127-.321-.19-.499-.19-.415 0-.748.335-.748.746 0 .205.084.409.249.557z" fill-rule="nonzero"/></svg>
+                                            </div>
+                                        </div>
+                                        <div class="h-full w-40 text-right">
+                                            <div role="button" x-on:click="modalAddDuePaiment = Due">
+                                                <svg height="27" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12 16.495c1.242 0 2.25 1.008 2.25 2.25s-1.008 2.25-2.25 2.25-2.25-1.008-2.25-2.25 1.008-2.25 2.25-2.25zm0-6.75c1.242 0 2.25 1.008 2.25 2.25s-1.008 2.25-2.25 2.25-2.25-1.008-2.25-2.25 1.008-2.25 2.25-2.25zm0-6.75c1.242 0 2.25 1.008 2.25 2.25s-1.008 2.25-2.25 2.25-2.25-1.008-2.25-2.25 1.008-2.25 2.25-2.25z"/></svg>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-row gap-2 text-[10px]">
+                                        <template x-if="Due.Personne">
+                                            <div x-text="getPersonneData('getData', Due.Personne).Nom"></div>
+                                        </template>
+                                        <div>•</div>
+                                        <div>
+                                            Paiement effectuer : <span class="font-bold mr-5" x-text="priceFormat(CheckPaiement(Due._id))"></span>
+                                            Restant : <span class="font-bold" x-text="priceFormat(Due.Montant - CheckPaiement(Due._id))"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="h-full w-1/4 rounded-lg bg-white flex flex-col gap-2 overflow-hidden"">
+                        <div class="font-semibold border-b-black h-[20px] p-3 pt-5 flex flex-grow items-center gap-3"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" fill="SpringGreen" height="15" viewBox="0 0 24 24"><path d="M12 21l-12-18h24z"/></svg>
+                            Recettes
+                        </div>
+                        <div class="w-auto h-full overflow-y-auto px-3">
+                            <template x-for="recette in transactionsFiltre('Recette')" :key="recette._id">
+                                <div class="w-auto shadow rounded-md mb-2 p-2">
+                                    <div class="flex flex-row justify-between mb-2">
+                                        <div class="w-1/2 font-bold" x-text="recette.Motif"></div>
+                                        <div class="w-full text-right" x-text="priceFormat(recette.Montant)"></div>
+                                    </div>
+                                    <div class="flex flex-row text-[10px] justify-between">
+                                        <div class="text-left pb-1" x-text="getCompteData('getData', recette.Compte).Nom" :style="`border-bottom: 1px solid ${getCompteData('getData', recette.Compte).Couleur};`"></div>
+                                        <div class="text-right" x-text="moment(recette.Date).format('ddd Do MMM YYYY')"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                    <div class="h-full w-1/4 rounded-lg bg-white flex flex-col gap-2 overflow-hidden"">
+                        <div class="font-semibold border-b-black h-[20px] p-3 pt-5 flex flex-grow items-center gap-3"> 
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="red" viewBox="0 0 24 24"><path d="M12 3l12 18h-24z"/></svg>
+                            Depenses
+                        </div>
+                        <div class="w-auto h-full overflow-y-auto px-3">
+                            <template x-for="Depense in transactionsFiltre('Depense')" :key="Depense._id">
+                                <div class="w-auto shadow rounded-md mb-2 p-2">
+                                    <div class="flex flex-row justify-between mb-2">
+                                        <div class="w-1/2 font-bold" x-text="Depense.Motif"></div>
+                                        <div class="w-full text-right" x-text="priceFormat(Depense.Montant)"></div>
+                                    </div>
+                                    <div class="flex flex-row text-[10px] justify-between">
+                                        <div class="text-left pb-1" x-text="getCompteData('getData', Depense.Compte).Nom" :style="`border-bottom: 1px solid ${getCompteData('getData', Depense.Compte).Couleur};`"></div>
+                                        <div class="text-right" x-text="moment(Depense.Date).format('ddd Do MMM YYYY')"></div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-[0] p-2 w-full text-base text-center flex items-center h-10">
+                    <span class="[line-break:anywhere] w-full">
+                        <span class="font-bold">Teldoo Group</span>
+                        <span class="font-medium"> - </span>
+                        <span class="font-medium [text-decoration:underline]">www.teldoogroup.com</span>
+                    </span>
+                </div>
+            </div>  
+        </div>
+
+        <div x-cloak x-show="modalAddCompte" class="z-10 top-0 left-0 fixed w-screen h-screen flex justify-center items-center">
+            <div x-on:click="modalAddCompte = false" class="fixed top-0 left-0 w-screen h-screen bg-black/50 z-0"></div>
+            <div class="z-10 bg-white text-xs flex flex-col justify-between content-center p-8 w-30 h-auto shadow-xl rounded-lg">
+                <div class="flex flex-col gap-2 mb-10 w-full">
+                    <div>
+                        <label>Nom du compte *</label>
+                        <input id="NomDuCompte" placeholder="Ex: Wave ou Orange money ou autres" type="text" class="px-2 rounded-md text-left bg-blue-gray-50 w-[-webkit-fill-available] h-10">
+                    </div>
+                    <div>
+                        <label>Solde du compte *</label>
+                        <input id="SoldeDuCompte" placeholder="Ex: 100.000" type="number" class="px-2 rounded-md text-left bg-blue-gray-50 w-[-webkit-fill-available] h-10">
+                    </div>
+                    <div class="relative">
+                        <label>Couleur *</label><div id="colorView" class="rounded-md absolute top-1 left-20 w-10 p-2"></div>
+                        <input id="CouleurDuCompte" type="text" class="hidden coloris instance3 rounded-md">
+                        <div class="color-picker mt-2 rounded-md"></div>
+                    </div>
+                </div>
+                <button x-on:click="addCompte()" class="relative flex flex-row items-center rounded-md text-left w-full mb-3 bg-black text-white px-4 py-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" /></svg>
+                    <span class="obsolute mx-auto left-0 right-0">ENREGISTRER</span>
+                </button>
+            </div>
+        </div>
+
+        <div x-cloak x-show="modalAddDuePaiment" class="z-10 top-0 left-0 fixed w-screen h-screen flex justify-center items-center">
+            <div x-on:click="modalAddDuePaiment = false" class="fixed top-0 left-0 w-screen h-screen bg-black/50 z-0"></div>
+            <div class="z-10 bg-white text-xs flex flex-col gap-3 content-center p-8 w-30 h-auto shadow-xl rounded-lg">
+
+                <div x-show="modalAddDuePaiment.Montant == CheckPaiement(modalAddDuePaiment._id)">
+                    <div>Tout les paiements ont déjà été effectuer pour cette transaction.</div>
+                </div>
+                <div x-show="modalAddDuePaiment.Montant != CheckPaiement(modalAddDuePaiment._id)">
+                    <div x-show="modalAddDuePaiment" class="mb-5">
+                        <div class="flex flex-row justify-between items-center gap-2">
+                            <div>
+                                <div>Motif: <span class="font-bold" x-text="modalAddDuePaiment.Motif"></span></div>
+                                <div>Montant: <span class="font-bold" x-text="priceFormat(modalAddDuePaiment.Montant)"></span></div>
+                            </div>
+                            <div class="flex flex-row gap-2">
+                                <div class="">
+                                    <svg x-show="modalAddDuePaiment.DueType == 'sortant'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="red" viewBox="0 0 24 24"><path d="M12 3l12 18h-24z"/></svg>
+                                    <svg x-show="modalAddDuePaiment.DueType == 'entrant'" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="SpringGreen" viewBox="0 0 24 24"><path d="M12 21l-12-18h24z"/></svg>
+                                </div>
+                                <div class="">
+                                    <svg x-show="modalAddDuePaiment.Rappel == false" width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M4.257 6.67l-.737-.737 1.415-1.414 15.693 15.693-1.414 1.414-.812-.811c-1.577 1.316-3.695 2.185-6.403 2.185-6.914 0-10.001-5.684-10.001-10 0-2.402.847-4.606 2.259-6.33zm1.425 1.425c-1.055 1.355-1.684 3.058-1.684 4.905 0 4.41 3.59 8 8.001 8 1.847 0 3.549-.629 4.905-1.683l-11.222-11.222zm1.233-3.709c1.489-.881 3.228-1.387 5.084-1.387 5.527 0 10.002 4.479 10.002 10.001 0 1.632-.441 3.463-1.366 5.107l-1.497-1.497c.552-1.085.863-2.312.863-3.61 0-4.413-3.59-8.001-8.002-8.001-1.298 0-2.525.311-3.61.862l-1.474-1.475zm-6.113 4.329c-.535-.824-.802-1.772-.802-2.718 0-2.757 2.233-4.995 4.991-4.995.948 0 1.896.268 2.721.803-3.172 1.217-5.692 3.739-6.91 6.91zm18.201-7.715c-.947 0-1.895.268-2.719.803 3.17 1.218 5.694 3.739 6.914 6.909.534-.823.801-1.77.801-2.717 0-2.761-2.236-4.995-4.996-4.995z"/></svg>
+                                    <svg x-show="modalAddDuePaiment.Rappel == true"width="24" height="24" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd"><path d="M19.004 1c-.947 0-1.895.268-2.719.803 3.17 1.218 5.694 3.739 6.914 6.909.534-.823.801-1.77.801-2.717 0-2.761-2.236-4.995-4.996-4.995m-7.004 20c-4.411 0-8.001-3.59-8.001-8 0-4.413 3.59-8.001 8.001-8.001 4.412 0 8.002 3.588 8.002 8.001 0 4.41-3.59 8-8.002 8m10.002-8c0-5.522-4.475-10.001-10.002-10.001-5.523 0-10.001 4.479-10.001 10.001 0 4.316 3.087 10 10.001 10 6.93 0 10.002-5.693 10.002-10m-21.199-4.285c-.535-.824-.802-1.772-.802-2.718 0-2.757 2.233-4.995 4.991-4.995.948 0 1.896.268 2.721.803-3.172 1.217-5.692 3.739-6.91 6.91m12.196 4.285v-5h-1.999v6.998h5.999v-1.998h-4z"/></svg>
+                                </div>
+                                <div class="">
+                                    <svg x-show="modalAddDuePaiment.Montant != CheckPaiement(modalAddDuePaiment._id)" width="27" height="27" fill="orange" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m12.002 2.005c5.518 0 9.998 4.48 9.998 9.997 0 5.518-4.48 9.998-9.998 9.998-5.517 0-9.997-4.48-9.997-9.998 0-5.517 4.48-9.997 9.997-9.997zm0 1.5c-4.69 0-8.497 3.807-8.497 8.497s3.807 8.498 8.497 8.498 8.498-3.808 8.498-8.498-3.808-8.497-8.498-8.497zm0 7.425 2.717-2.718c.146-.146.339-.219.531-.219.404 0 .75.325.75.75 0 .193-.073.384-.219.531l-2.717 2.717 2.727 2.728c.147.147.22.339.22.531 0 .427-.349.75-.75.75-.192 0-.384-.073-.53-.219l-2.729-2.728-2.728 2.728c-.146.146-.338.219-.53.219-.401 0-.751-.323-.751-.75 0-.192.073-.384.22-.531l2.728-2.728-2.722-2.722c-.146-.147-.219-.338-.219-.531 0-.425.346-.749.75-.749.192 0 .385.073.531.219z" fill-rule="nonzero"/></svg>
+                                    <svg x-show="modalAddDuePaiment.Montant == CheckPaiement(modalAddDuePaiment._id)" width="24" height="24" fill="SpringGreen" clip-rule="evenodd" fill-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="m11.998 2.005c5.517 0 9.997 4.48 9.997 9.997 0 5.518-4.48 9.998-9.997 9.998-5.518 0-9.998-4.48-9.998-9.998 0-5.517 4.48-9.997 9.998-9.997zm0 1.5c-4.69 0-8.498 3.807-8.498 8.497s3.808 8.498 8.498 8.498 8.497-3.808 8.497-8.498-3.807-8.497-8.497-8.497zm-5.049 8.886 3.851 3.43c.142.128.321.19.499.19.202 0 .405-.081.552-.242l5.953-6.509c.131-.143.196-.323.196-.502 0-.41-.331-.747-.748-.747-.204 0-.405.082-.554.243l-5.453 5.962-3.298-2.938c-.144-.127-.321-.19-.499-.19-.415 0-.748.335-.748.746 0 .205.084.409.249.557z" fill-rule="nonzero"/></svg>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="text-[10px] mt-2">
+                            Paiement effectuer : <span class="font-bold mr-5" x-text="priceFormat(CheckPaiement(modalAddDuePaiment._id))"></span>
+                            Restant : <span class="font-bold" x-text="priceFormat(modalAddDuePaiment.Montant - CheckPaiement(modalAddDuePaiment._id))"></span>
+                        </div>
+                        <input id="ValeurAPayer" type="number" x-bind:value="modalAddDuePaiment.Montant - CheckPaiement(modalAddDuePaiment._id)" hidden>
+                    </div>
+                    <div class="relative">
+                        <div>Type de paiement *</div>
+                        <div class="mt-2 flex flex-row justify-between items-center gap-2">
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-blue-gray-50">
+                                <input type="radio" name="TypePaiement" value="complet" class="mr-2" x-model="TypePaiement">
+                                Paiement complet
+                            </label>
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-blue-gray-50">
+                                <input type="radio" name="TypePaiement" value="partiel" class="mr-2" x-model="TypePaiement">
+                                Paiement partiel
+                            </label>
+                        </div>
+                    </div>
+                    <div x-show="TypePaiement == 'partiel'" class="relative">
+                        <label for="CompteTransaction">Montant du paiement</label>
+                        <input id="Montantpaiement" placeholder="Ex: 100.000" type="number" class="mt-2 p-2 rounded-md text-left bg-blue-gray-50 w-[-webkit-fill-available]">
+                    </div>
+                    <div class="relative">
+                        <label for="CompteTransaction">Compte</label>
+                        <div class="mt-2 grid grid-cols-2 justify-between items-center gap-2">
+                            <template x-for="compte in comptes" :key="compte._id">
+                                <label :style="`border-left: 5px solid ${compte.Couleur};`" class="bg-blue-gray-50 flex flex-row items-center px-2 rounded-md text-left w-auto h-10">
+                                    <input type="radio" name="CompteTransaction" :value="compte._id" class="mr-2" x-model="CompteTransaction">
+                                    <span x-text="compte.Nom"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
+                    <button x-on:click="addPaiement()" class="relative flex flex-row items-center rounded-md text-left w-full mt-5 bg-black text-white px-4 py-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" /></svg>
+                        <span class="obsolute mx-auto left-0 right-0">ENREGISTRER</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div x-cloak x-show="modalAddTransaction" class="z-10 top-0 left-0 fixed w-screen h-screen flex justify-center items-center">
+            <div x-on:click="modalAddTransaction = false" class="fixed top-0 left-0 w-screen h-screen bg-black/50 z-0"></div>
+            <div class="relative z-10 bg-white text-xs flex flex-col justify-between content-center p-5 w-30 h-auto shadow-xl rounded-lg">
+                <div class="flex flex-col gap-3 mb-8 w-full">
+                    <div class="flex flex-row justify-between gap-2">
+                        <div class="w-1/2">
+                            <div>Motif *</div>
+                            <input id="MotifTransaction" placeholder="Ex: Achat de marchadise" type="text" class="mt-2 p-2 rounded-md text-left bg-blue-gray-50">
+                        </div>
+                        <div class="w-1/2">
+                            <div>Montant *</div>
+                            <input id="MontantTransaction" placeholder="Ex: 10.000" type="number" class="mt-2 p-2 rounded-md text-left bg-blue-gray-50">
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div>Type *</div>
+                        <div class="mt-2 flex flex-row justify-between items-center gap-2">
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-blue-gray-50 w-1/3">
+                                <input type="radio" name="TypeTransaction" value="Due" class="mr-2" x-model="TypeTransaction">
+                                Due
+                            </label>
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-blue-gray-50 w-1/3">
+                                <input type="radio" name="TypeTransaction" value="Recette" class="mr-2" x-model="TypeTransaction">
+                                Recette
+                            </label>
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-blue-gray-50 w-1/3">
+                                <input type="radio" name="TypeTransaction" value="Depense" class="mr-2" x-model="TypeTransaction">
+                                Depense
+                            </label>
+                        </div>
+                    </div>
+                    <div x-show="TypeTransaction == 'Due'" class="relative">
+                        <div class="text-[12px] text-white flex flex-row justify-between items-center gap-2">
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-red-100 w-1/2">
+                                <input type="radio" name="TypeDue" value="sortant" class="mr-2" x-model="TypeDue">
+                                Je dois a quelqu'un
+                            </label>
+                            <label class="flex flex-row items-center p-2 rounded-md text-left bg-green w-1/2">
+                                <input type="radio" name="TypeDue" value="entrant" class="mr-2" x-model="TypeDue">
+                                Quelqu'un me dois
+                            </label>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <div class="flex flex-row justify-between items-center">
+                            <div class="text-left">Personne *</div>
+                        </div>
+                        <div class="flex flex-col gap-1 mt-2 p-2 rounded-md text-left bg-blue-gray-50 w-auto h-40 overflow-hidden">
+                            <div class="w-auto flex flex-grow gap-2 justify-between items-center h-7">
+                                <input placeholder="Recherche" type="text" x-model="searchPersonnesKeyword" class="p-2 rounded-md text-left bg-white w-1/2 h-auto">
+                                <button x-on:click="modalAddPersonnes = true" class="bg-green text-white font-semibold rounded-md p-2 w-1/2 h-auto">Ajouter</button>
+                            </div>
+                            <div class="w-auto h-full overflow-y-auto">
+                                <template x-for="personne in getPersonneData()" :key="personne._id">
+                                    <div x-on:click="selectedPersonneOnTransaction = personne._id" style="border-bottom: 1px dotted #bbb;" :class="{'bg-blue-gray-200': personne._id == selectedPersonneOnTransaction}" class="flex flex-row justify-between items-center text-left w-auto p-2">
+                                        <span class="text-left" x-text="personne.Nom"></span>
+                                        <div class="flex flex-col gap-1 text-right">
+                                            <div class="text-[10px]">Due Total</div>
+                                            <div>A faire</div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </div>
+                    <div  x-show="TypeTransaction != 'Due'" class="relative">
+                        <label for="CompteTransaction">Compte</label>
+                        <div class="mt-2 grid grid-cols-2 justify-between items-center gap-2">
+                            <template x-for="compte in comptes" :key="compte._id">
+                                <label :style="`border-left: 5px solid ${compte.Couleur};`" class="bg-blue-gray-50 flex flex-row items-center px-2 rounded-md text-left w-auto h-10">
+                                    <input type="radio" name="CompteTransaction" :value="compte._id" class="mr-2" x-model="CompteTransaction">
+                                    <span x-text="compte.Nom"></span>
+                                </label>
+                            </template>
+                        </div>
+                    </div>
+                </div>
+                <button x-on:click="addTransaction()" class="relative flex flex-row items-center rounded-md text-left w-full bg-black text-white p-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block -mt-1 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 4H6a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-2m-4-1v8m0 0l3-3m-3 3L9 8m-5 5h2.586a1 1 0 01.707.293l2.414 2.414a1 1 0 00.707.293h3.172a1 1 0 00.707-.293l2.414-2.414a1 1 0 01.707-.293H20" /></svg>
+                    <span class="obsolute mx-auto left-0 right-0">ENREGISTRER</span>
+                </button>
+
+                <div x-show="modalAddPersonnes" class="overflow-hidden absolute h-full w-full top-0 left-0 right-0 z-11 rounded-md flex justify-center items-center">
+                    <div x-on:click="modalAddPersonnes = false" class="w-full h-full absolute top-0 left-0 bg-black/70 z-1"></div>
+                    <div class="p-2 bg-white w-[80%] flex flex-col gap-2 rounded-md z-10">
+                        <div>Nom *</div>
+                        <input id="NomPersonne" placeholder="Ex: Khadim Diop" type="text" class="px-2 rounded-md text-left bg-blue-gray-50 w-[-webkit-fill-available] h-10">
+                        <div>Téléphone</div>
+                        <input id="NumeroPersonne" placeholder="Ex: 770000000" type="number" class="px-2 rounded-md text-left bg-blue-gray-50 w-[-webkit-fill-available] h-10">
+                        <button x-on:click="addPersonne()" class="w-auto p-2 bg-black h-10 rounded-md text-white"> AJOUTER</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="z-40 text-xs fixed inset-0 flex flex-col-reverse items-end justify-start h-screen w-screen" @notice.window="add($event.detail)" style="pointer-events:none">
+            <template x-for="notice of notices" :key="notice.id">
+            <div
+                x-show="visible.includes(notice)"
+                x-transition:enter="transition ease-in duration-200"
+                x-transition:enter-start="transform opacity-0 translate-y-2"
+                x-transition:enter-end="transform opacity-100"
+                x-transition:leave="transition ease-out duration-500"
+                x-transition:leave-start="transform translate-x-0 opacity-100"
+                x-transition:leave-end="transform translate-x-full opacity-0"
+                @click="remove(notice.id)"
+                class="rounded-md mb-4 mr-6 w-56 p-3 flex items-center justify-center text-white shadow-lg text-xs cursor-pointer"
+                :class="{
+                'bg-green': notice.type === 'success',
+                'bg-blue': notice.type === 'info',
+                'bg-orange': notice.type === 'warning',
+                'bg-red-200': notice.type === 'error',
+                }"
+                style="pointer-events:all"
+                x-text="notice.text">
+            </div>
+            </template>
+        </div>
+    </body>
+</html>

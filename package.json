@@ -1,0 +1,31 @@
+{
+  "name": "TeldooBudget",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build all platform": "electron-builder -mwl",
+    "build macOS": "electron-builder --mac",
+    "build Windows": "electron-builder --win",
+    "build Linux": "electron-builder --linux"
+  },
+  "author": {
+    "name": "Teldoo Group",
+    "email": "teldoo@teldoogroup.com"
+  },
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^21.2.2",
+    "electron-builder": "^22.10.3"
+  },
+  "build": {
+    "mac": {
+      "category": "public.app-category.utilities"
+    }
+  },
+  "dependencies": {
+    "@electron/remote": "^2.0.9",
+    "nedb": "^1.8.0"
+  }
+}
