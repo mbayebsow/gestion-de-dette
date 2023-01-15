@@ -1,0 +1,18 @@
+{
+    "html.format.wrapAttributes": "aligned-multiple",
+    "diffEditor.wordWrap": "off",
+    "editor.wrappingIndent": "none",
+    "debug.console.wordWrap": false,
+    "html.format.wrapLineLength": 0,
+    "[markdown]": {
+        "editor.wordWrap": "off",
+        "editor.quickSuggestions": {
+            "comments": "on",
+            "strings": "on",
+            "other": "on"
+        }
+    },
+    "editor.fontFamily": "JetBrains Mono",
+    "volar.autoWrapParentheses": false,
+    "editor.wordWrapColumn": 1,
+}

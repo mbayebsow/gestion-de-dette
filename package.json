@@ -1,6 +1,6 @@
 {
   "name": "TeldooBudget",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "",
   "main": "main.js",
   "scripts": {
@@ -8,7 +8,8 @@
     "build all platform": "electron-builder -mwl",
     "build macOS": "electron-builder --mac",
     "build Windows": "electron-builder --win",
-    "build Linux": "electron-builder --linux"
+    "build Linux": "electron-builder --linux",
+    "tailwindcss": "tailwindcss -i ./public/src/index.css -o ./public/src/output.css --watch"
   },
   "author": {
     "name": "Teldoo Group",
@@ -17,7 +18,8 @@
   "license": "CC0-1.0",
   "devDependencies": {
     "electron": "^21.2.2",
-    "electron-builder": "^22.10.3"
+    "electron-builder": "^22.10.3",
+    "tailwindcss": "^3.2.4"
   },
   "build": {
     "mac": {
@@ -26,6 +28,7 @@
   },
   "dependencies": {
     "@electron/remote": "^2.0.9",
+    "moment": "^2.29.4",
     "nedb": "^1.8.0"
   }
 }

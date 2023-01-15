@@ -1,7 +1,7 @@
 const config = {
 
     // Application Name
-    'appName' : 'Teldoo POS',
+    'appName' : 'Teldoo Budget',
 
     // Hide elements by ID
     'hideElementsId' : [],

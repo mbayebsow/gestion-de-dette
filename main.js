@@ -13,9 +13,9 @@ let rightMenu = Menu.buildFromTemplate(RightMenuapp)
 
 function createWindow () {
   mainWindow = new BrowserWindow({
-    width: 1150,
+    width: 1000,
     height: 650,
-    minWidth: 1150,
+    minWidth: 900,
     minHeight: 600,
     titleBarStyle: 'hidden',
     titleBarOverlay: true,
@@ -39,14 +39,14 @@ function createWindow () {
     rightMenu.popup(mainWindow)
   })
 
-  //mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
   //CreatWindow execute loding remote content
   loadWebContent()
 }
 
 function loadWebContent() {
   //Loading spalsh screen
-  mainWindow.loadFile(path.join(__dirname, 'public/loading.html'))
+  mainWindow.loadFile(path.join(__dirname, 'loading.html'))
 
   //create webContants
   let wc = mainWindow.webContents
@@ -58,7 +58,7 @@ function loadWebContent() {
 
   // if not loading page redirect error page
   wc.on('did-fail-provisional-load', (error, code)=> {
-    mainWindow.loadFile(path.join(__dirname, 'public/offline.html'))
+    mainWindow.loadFile(path.join(__dirname, 'offline.html'))
   })
 }
 
@@ -98,9 +98,7 @@ app.whenReady().then(createWindow)
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit()
-  }
+  app.quit()
 })
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
