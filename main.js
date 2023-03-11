@@ -20,49 +20,39 @@ function createWindow () {
     titleBarStyle: 'hidden',
     titleBarOverlay: true,
     titleBarOverlay: {
-      color: '#ffffff',
+      color: 'rgba(0,0,0,0.0)',
       symbolColor: '#000000',
       height: 40
     },
-    trafficLightPosition: { x: 10, y: 15 },
+    trafficLightPosition: { x: 20, y: 20 },
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
-      contextIsolation: false
+      contextIsolation: false,
+      nodeIntegrationInSubFrames: true,
+      webviewTag: true,
+      nodeIntegration: true
     }
   })
   remoteMain.enable(mainWindow.webContents);
-  //Load Appliaction Main Menu
   Menu.setApplicationMenu(mainMenu) 
-  //Load Right click menu
   mainWindow.webContents.on('context-menu', e => {
     rightMenu.popup(mainWindow)
   })
 
-  mainWindow.webContents.openDevTools()
-  //CreatWindow execute loding remote content
+  //mainWindow.webContents.openDevTools()
   loadWebContent()
 }
 
 function loadWebContent() {
-  //Loading spalsh screen
   mainWindow.loadFile(path.join(__dirname, 'loading.html'))
-
-  //create webContants
   let wc = mainWindow.webContents
-
-  //suessfull loding page afer dom created
   wc.once('did-finish-load'  ,  () => {
     mainWindow.loadFile(path.join(__dirname, 'public/index.html'))
   })
-
-  // if not loading page redirect error page
   wc.on('did-fail-provisional-load', (error, code)=> {
     mainWindow.loadFile(path.join(__dirname, 'offline.html'))
   })
 }
-
-// Check website loading error (offline, page not found or etc.)
 ipcMain.on('online-status-changed', (event, status) => {
   if(status == true) { loadWebContent() }
 })
@@ -71,9 +61,7 @@ ipcMain.on('online-status-changed', (event, status) => {
 ipcMain.on('printPage', () => {
 
   var options = PrintOptions;
-
   let win = BrowserWindow.getFocusedWindow();
-
   win.webContents.print(options, (success, failureReason) => {
       if (!success) dialog.showMessageBox(mainWindow, {
         message: failureReason.charAt(0).toUpperCase() + failureReason.slice(1),
@@ -95,8 +83,6 @@ module.exports = (pageId) => {
 }
 
 app.whenReady().then(createWindow)
-
-// Quit when all windows are closed.
 app.on('window-all-closed', () => {
   app.quit()
 })

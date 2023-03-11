@@ -21,7 +21,6 @@ window.addEventListener("load", function () {
       CouleurDuCompte.value = col;
   });
 });
-
 function initApp() {
   const app = {
     cleActivation: '',
@@ -32,7 +31,7 @@ function initApp() {
     modalAddDues: false,
     modalAddPaiementDues: false,
     modalAddSupplementDues: false,
-    pageActive: 'dues',
+    pageActive: 'dasboard',
     modalDueHistory: '',
     ClientView: '',
     TypeTransaction: '',
@@ -163,6 +162,23 @@ function initApp() {
                 _this.activationSatus = ''
                 _this.add({type: 'success', text: 'Heureux de vous revoir '+result.data.nom})
                 _this.loadDatas()
+
+                dBComptes.find({}).sort({ Date: 1 }).exec(function (err, docs) {
+                  if(docs.length == 0){
+                    dBComptes.insert({
+                      'Nom': 'Compte courant', 
+                      'Solde': 0,
+                      'Couleur': 'red',
+                      'Date': new Date().toISOString(),
+                      'DernierMaj': new Date().toISOString(),
+                    }, function (err, newDoc) {  
+                       if(err){console.log(err)}
+                       if(newDoc){
+                        _this.loadComptes()
+                      }
+                    });
+                  }
+                })
               }
             });
           }else{
@@ -240,7 +256,11 @@ function initApp() {
       if (object == 'getData'){
         const rg = id ? new RegExp(id, "gi") : null;
         const obj = this.comptes.find((p) => !rg || p._id.match(rg));
-        return obj
+        if(obj) return obj
+        return {
+          'Nom':'Compte supprimer',
+          'Couleur':'red'
+        }
       }
       //const rg = this.searchclientsKeyword ? new RegExp(this.searchclientsKeyword, "gi") : null;
       //return this.clients.filter((p) => !rg || p.Nom.match(rg));
@@ -412,6 +432,18 @@ function initApp() {
         dBComptes.remove({ _id: compte._id }, {}, function (err, numRemoved) {
           if(numRemoved ==1) {
             _this.loadComptes()
+            dBTransactions.update({ Compte: compte._id }, { $set: { Compte: 'deleted' } }, { multi: true }, function (err, numReplaced) {
+              if(numReplaced){
+                dBTransactions.loadDatabase();
+                _this.loadTransactions()
+              }
+            });
+            dBPaiements.update({ Compte: compte._id }, { $set: { Compte: 'deleted' } }, { multi: true }, function (err, numReplaced) {
+              if(numReplaced){
+                dBPaiements.loadDatabase();
+                _this.loadPaiements()
+              }
+            });
           }
         });
       } else {
